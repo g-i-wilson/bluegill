@@ -25,7 +25,11 @@ public abstract class MovingOperation {
 	public abstract double operation ( Double a, Double b );
 	
 	public String toString () {
-		return "Constants: \n"+coefs+"\nCurrent signal state:\n"+signal;
+		String str = "Coefficients: \n";
+		for (Double d : coefs) str += d+"\n";
+		str += "Current signal state:\n";
+		for (Double d : signal) str += d+"\n";
+		return str;
 	}
 	
 }
