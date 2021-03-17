@@ -4,6 +4,7 @@ public class QuadratureDemodulator {
 
 	private double samplesPerCycle;
 	private double iPhaseOffset;
+	private int	filterLength;
 
 	private double i0;
 	private double i1;
@@ -27,20 +28,25 @@ public class QuadratureDemodulator {
 		return aR*bI + aI*bR;
 	}
 
+	public QuadratureDemodulator ( double samplesPerCycle ) {
+		this( samplesPerCycle, (int)(samplesPerCycle*2), 0.0, 0.0, 0.0 );
+	}
+
 	public QuadratureDemodulator ( double samplesPerCycle, int filterLength ) {
 		this( samplesPerCycle, filterLength, 0.0, 0.0, 0.0 );
 	}
 		
-	public QuadratureDemodulator ( double samplesPerCycle, double iPhaseOffset, double iInit, double qInit ) {
+	public QuadratureDemodulator ( double samplesPerCycle, int filterLength, double iPhaseOffset, double iInit, double qInit ) {
 		this.samplesPerCycle = samplesPerCycle;
 		this.iPhaseOffset = iPhaseOffset;
+		this.filterLength = filterLength;
 		i0 = iInit;
 		i1 = iInit;
 		q0 = qInit;
 		q1 = qInit;
 		t = 0;
-		iFilter = new WindowFilter( samplesPerCycle/2, 0.5, 0.5, 0.0, 0.0 ); // Hann window filter
-		qFilter = new WindowFilter( samplesPerCycle/2, 0.5, 0.5, 0.0, 0.0 ); // Hann window filter
+		iFilter = new WindowFilter( filterLength );
+		qFilter = new WindowFilter( filterLength );
 	}
 	
 	public QuadratureDemodulator sample ( double sample ) {
@@ -80,8 +86,21 @@ public class QuadratureDemodulator {
 	
 	// test QuadratureDemodulator
 	public static void main (String[] args) {
-		QuadratureDemodulator qd = new QuadratureDemodulator( 8.0, 33 );
-		// TODO
+		WindowFilter wf = new WindowFilter( 16 );
+		QuadratureModulator qm = new QuadratureModulator( 16.0 );
+		QuadratureDemodulator qd = new QuadratureDemodulator( 16.0 );
+		for (int i=0; i<50; i++) {
+			double modSample = qm.sample( Math.PI/2 );
+			double filtSample = wf.sample( modSample );
+			qd.sample( filtSample );
+			System.out.println( modSample+","+filtSample+","+qd.amplitude()+","+qd.phase() );
+		}
+		for (int i=0; i<50; i++) {
+			double modSample = qm.sample( Math.PI/2 ) * 0.1;
+			double filtSample = wf.sample( modSample );
+			qd.sample( filtSample );
+			System.out.println( modSample+","+filtSample+","+qd.amplitude()+","+qd.phase() );
+		}
 	}
 
 }
