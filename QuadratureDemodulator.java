@@ -49,7 +49,7 @@ public class QuadratureDemodulator {
 		qFilter = new WindowFilter( filterLength );
 	}
 	
-	public QuadratureDemodulator sample ( double sample ) {
+	public QuadratureDemodulator input ( double sample ) {
 		
 		i1 = i0;
 		q1 = q0;
@@ -86,20 +86,21 @@ public class QuadratureDemodulator {
 	
 	// test QuadratureDemodulator
 	public static void main (String[] args) {
-		WindowFilter wf = new WindowFilter( 16 );
+		SignalPath wf = new WindowFilter( 16 );
 		QuadratureModulator qm = new QuadratureModulator( 16.0 );
 		QuadratureDemodulator qd = new QuadratureDemodulator( 16.0 );
+		SignalPath comp = new Comparitor( 10.0, 15.0, 20.0 );
 		for (int i=0; i<50; i++) {
-			double modSample = qm.sample( Math.PI/2 );
+			double modSample = qm.phase( Math.PI/2 );
 			double filtSample = wf.sample( modSample );
-			qd.sample( filtSample );
-			System.out.println( modSample+","+filtSample+","+qd.amplitude()+","+qd.phase() );
+			qd.input( filtSample );
+			System.out.println( modSample+","+filtSample+","+qd.amplitude()+","+qd.phase()+","+comp.sample(qd.amplitude()) );
 		}
 		for (int i=0; i<50; i++) {
-			double modSample = qm.sample( Math.PI/2 ) * 0.1;
+			double modSample = qm.phase( Math.PI/2 ) * 0.1;
 			double filtSample = wf.sample( modSample );
-			qd.sample( filtSample );
-			System.out.println( modSample+","+filtSample+","+qd.amplitude()+","+qd.phase() );
+			qd.input( filtSample );
+			System.out.println( modSample+","+filtSample+","+qd.amplitude()+","+qd.phase()+","+comp.sample(qd.amplitude()) );
 		}
 	}
 

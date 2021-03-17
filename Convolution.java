@@ -2,7 +2,7 @@ package bluegill;
 
 import java.util.*;
 
-public class Convolution extends MovingOperation {
+public class Convolution extends IntegrationWindow {
 
 	public Convolution ( List<Double> coefs ) {
 		super( coefs );

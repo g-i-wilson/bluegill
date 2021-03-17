@@ -2,12 +2,12 @@ package bluegill;
 
 import java.util.*;
 
-public abstract class MovingOperation {
+public abstract class IntegrationWindow implements SignalPath {
 
 	private List<Double> coefs;
 	private List<Double> signal;
 
-	public MovingOperation ( List<Double> coefs ) {
+	public IntegrationWindow ( List<Double> coefs ) {
 		this.coefs = coefs;
 		this.signal = new ArrayList<Double>();
 	}

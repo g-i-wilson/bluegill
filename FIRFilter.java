@@ -2,7 +2,7 @@ package bluegill;
 
 import java.util.*;
 
-public class FIRFilter extends MovingOperation {
+public class FIRFilter extends IntegrationWindow {
 
 	public FIRFilter ( List<Double> coefs ) {
 		super( coefs );
