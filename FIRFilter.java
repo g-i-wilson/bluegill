@@ -2,20 +2,23 @@ package bluegill;
 
 import java.util.*;
 
-public class FIRFilter extends IntegrationWindow {
+public class FIRFilter extends Window {
 
-	public FIRFilter ( List<Double> coefs ) {
-		super( coefs );
+	public FIRFilter ( int filterLength ) {
+		super( filterLength );
 	}
 
-	public double operation ( Double a, Double b ) {
-		return a * b;
+	public FIRFilter ( List<Double> coef ) {
+		super( coef );
 	}
-	
-	// test convolution
+
+	public double operation ( int i ) {
+		return coef(i) * x(i);
+	}
+
+	// test
 	public static void main (String[] args) {
-		List<Double> const0 = new ArrayList<Double>(Arrays.asList(0.2,0.4,0.6,0.4,0.2));
-		FIRFilter sig0 = new FIRFilter( const0 );
+		FIRFilter sig0 = new FIRFilter( 5 );
 		for (int i=0; i<10; i++) {
 			System.out.println( sig0.sample( 0.0 ) );
 		}
@@ -27,5 +30,5 @@ public class FIRFilter extends IntegrationWindow {
 			System.out.println( sig0.sample( 0.0 ) );
 		}
 	}
-	
+
 }
