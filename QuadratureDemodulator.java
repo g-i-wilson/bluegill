@@ -89,7 +89,8 @@ public class QuadratureDemodulator {
 		SignalPath filter = new FIRFilter( 16 );
 		QuadratureModulator qm = new QuadratureModulator( 16.0 );
 		QuadratureDemodulator qd = new QuadratureDemodulator( 16.0 );
-		SignalPath se = new SignalEnvelope( 32 );
+		// SignalPath se = new SignalEnvelope( 16, 0.5, 0.5, 0.0, 0.0 );
+		SignalPath se = new SignalEnvelope( 16 );
 		System.out.println( se );
 		for (int i=0; i<20; i++) {
 			double modSample = qm.phase( Math.PI/2 ) * 0.1;
@@ -103,7 +104,7 @@ public class QuadratureDemodulator {
 			qd.input( filteredSample );
 			System.out.println( modSample+","+filteredSample+","+qd.amplitude()+","+qd.phase()+","+se.sample(filteredSample) );
 		}
-		for (int i=0; i<50; i++) {
+		for (int i=0; i<100; i++) {
 			double modSample = qm.phase( Math.PI/2 ) * 0.1;
 			double filteredSample = filter.sample( modSample );
 			qd.input( filteredSample );

@@ -8,6 +8,10 @@ public class Convolution extends Window {
 		super( coefs );
 	}
 
+	public Convolution ( List<Double> coefs, double a0, double a1, double a2, double a3 ) {
+		super( coefs, a0, a1, a2, a3 );
+	}
+
 	public double operation ( int i ) {
 		if (coef(i) > 0.0) {
 			return Math.min( coef(i), x(i) );

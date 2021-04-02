@@ -10,7 +10,6 @@ public class HilbertTransform extends Convolution {
     for (int n=0; n<=N; n++) {
       double h;
       double t = (double)n-((double)N/2);
-      System.out.println(t);
       if (t > 0.25 || t < -0.25) { // t will either be very near an integer (x.000...) or very near half (x.500...)
         double tscaled = t * (Math.PI/N);  // scale to range of -pi..pi
         hilbert.add( 1/(Math.PI*tscaled) );
@@ -23,6 +22,10 @@ public class HilbertTransform extends Convolution {
 
   public HilbertTransform ( int length ) {
     super( computeHilbert(length) );
+  }
+
+  public HilbertTransform ( int length, double a0, double a1, double a2, double a3 ) {
+    super( computeHilbert(length), a0, a1, a2, a3 );
   }
 
 }
