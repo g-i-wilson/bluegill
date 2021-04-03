@@ -1,15 +1,13 @@
 package bluegill;
 
-public class QuadratureDemodulator {
+public class QuadratureDemodulator implements PhasorProducer {
 
 	private double samplesPerCycle;
 	private double iPhaseOffset;
 	private int	filterLength;
 
-	private double i0;
-	private double i1;
-	private double q0;
-	private double q1;
+	private Phasor p0;
+	private Phasor p1;
 	private double amplitude;
 	private double phase;
 	private double frequency;
@@ -19,14 +17,6 @@ public class QuadratureDemodulator {
 	private FIRFilter iFilter;
 	private FIRFilter qFilter;
 
-
-	public static double multReal (double aR, double aI, double bR, double bI) {
-		return aR*bR - aI*bI;
-	}
-
-	public static double multImag (double aR, double aI, double bR, double bI) {
-		return aR*bI + aI*bR;
-	}
 
 	public QuadratureDemodulator ( double samplesPerCycle ) {
 		this( samplesPerCycle, (int)(samplesPerCycle*2), 0.0, 0.0, 0.0 );
@@ -40,48 +30,30 @@ public class QuadratureDemodulator {
 		this.samplesPerCycle = samplesPerCycle;
 		this.iPhaseOffset = iPhaseOffset;
 		this.filterLength = filterLength;
-		i0 = iInit;
-		i1 = iInit;
-		q0 = qInit;
-		q1 = qInit;
+		p0 = new Phasor( iInit, qInit );
+		p1 = new Phasor( iInit, qInit );
 		t = 0;
 		iFilter = new FIRFilter( filterLength );
 		qFilter = new FIRFilter( filterLength );
 	}
 
-	public QuadratureDemodulator input ( double sample ) {
+	public Phasor sample ( double sample ) {
 
-		i1 = i0;
-		q1 = q0;
+		p0 = p1;
 
 		// Mixing and filtering
-		i0 = iFilter.sample( sample * Math.sin( 2*Math.PI*(1/samplesPerCycle)*t - (iPhaseOffset            ) ) );
-		q0 = qFilter.sample( sample * Math.sin( 2*Math.PI*(1/samplesPerCycle)*t - (iPhaseOffset + Math.PI/2) ) );
-
-		amplitude = Math.sqrt( i0*i0 + q0*q0 );
-		phase = Math.atan2( i0, q0 );
-		frequency =
-			Math.atan2(
-				multReal(i0, q0, i1, -q1),
-				multImag(i0, q0, i1, -q1)
-	  	);
+		p1 = new Phasor(
+			iFilter.sample( sample * Math.sin( 2*Math.PI*(1/samplesPerCycle)*t - (iPhaseOffset            ) ) ),
+			qFilter.sample( sample * Math.sin( 2*Math.PI*(1/samplesPerCycle)*t - (iPhaseOffset + Math.PI/2) ) )
+		);
 
 		t++;
 
-		return this;
-
-	}
-
-	public double amplitude () {
-		return amplitude;
-	}
-
-	public double phase () {
-		return phase;
+		return p1;
 	}
 
 	public double frequency () {
-		return frequency;
+		return p1.multiply( p0.conjugate() ).phase();
 	}
 
 	// test QuadratureDemodulator

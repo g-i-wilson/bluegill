@@ -25,8 +25,27 @@ public class Comparitor implements SignalPath {
 		this.amplitude = amplitude;
 		this.state = state;
 	}
-	
+
 	public double sample ( double sample ) {
+		return amplitude * state(sample);
+	}
+
+	public int state () {
+		return state;
+	}
+
+	public int state ( int state ) {
+		if (state > 0) {
+			this.state = 1;
+		} else if (state < 0) {
+			this.state = -1;
+		} else {
+			this.state = 0;
+		}
+		return state;
+	}
+
+	public int state ( double sample ) {
 		if (state == 1) {
 			if (sample < low && sample > -low) 	state = 0;
 			if (sample < -high) 								state = -1;
@@ -37,11 +56,19 @@ public class Comparitor implements SignalPath {
 			if (sample > high) 									state = 1;
 			if (sample < -high) 								state = -1;
 		}
-		return amplitude*state;
-	}
-	
-	public int state () {
 		return state;
+	}
+
+	public double low () {
+		return low;
+	}
+
+	public double high () {
+		return high;
+	}
+
+	public double amplitude () {
+		return amplitude;
 	}
 
 }
