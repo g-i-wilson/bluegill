@@ -14,8 +14,8 @@ public class QuadratureDemodulator implements PhasorProducer {
 
 	private int t;
 
-	private FIRFilter iFilter;
-	private FIRFilter qFilter;
+	private SignalPath iFilter;
+	private SignalPath qFilter;
 
 
 	public QuadratureDemodulator ( double samplesPerCycle ) {
@@ -58,9 +58,9 @@ public class QuadratureDemodulator implements PhasorProducer {
 
 	// test QuadratureDemodulator
 	public static void main (String[] args) {
+		PhasorConsumer qm = new QuadratureModulator( 16.0 );
 		SignalPath filter = new FIRFilter( 16 );
-		QuadratureModulator qm = new QuadratureModulator( 16.0 );
-		QuadratureDemodulator qd = new QuadratureDemodulator( 16.0 );
+		PhasorProducer qd = new QuadratureDemodulator( 16.0 );
 		// SignalPath se = new SignalEnvelope( 16, 0.5, 0.5, 0.0, 0.0 );
 		SignalPath se = new SignalEnvelope( 16 );
 		System.out.println( se );

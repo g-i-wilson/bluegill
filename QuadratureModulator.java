@@ -2,35 +2,41 @@ package bluegill;
 
 import java.util.*;
 
-public class QuadratureModulator {
+public class QuadratureModulator implements PhasorConsumer {
 
-	private double samplesPerCycle;
-	
-	private int t;
+	private double frequency;
+	private Phasor localOscillator;
 
 	public QuadratureModulator ( double samplesPerCycle ) {
-		this.samplesPerCycle = samplesPerCycle;
-		t = 0;
+		frequency = 1/samplesPerCycle;
+		localOscillator = new Phasor();
 	}
-	
-	public double phase ( double angle ) {
-		double iAmp = Math.cos( angle ) * Math.sin( 2*Math.PI*(1/samplesPerCycle)*t             );
-		double qAmp = Math.sin( angle ) * Math.sin( 2*Math.PI*(1/samplesPerCycle)*t - Math.PI/2 );		
-		t++;
-		return iAmp + qAmp;
+
+	// Each sample is a "mix" of the modulation with the real (In-phase) and imaginary (Quadrature) signals, which are added together.
+	// The modulation Phasor simply scales the I vs Q in the output.
+	public double sample ( Phasor modulation ) {
+		localOscillator = localOscillator.relative( frequency );
+		return
+			modulation.real() * localOscillator.real() +
+			modulation.imag() * localOscillator.imag()
+		;
 	}
-	
+
 	// test QuadratureModulator
 	public static void main (String[] args) {
-		QuadratureModulator qm = new QuadratureModulator( 16 );
+		PhasorConsumer qm = new QuadratureModulator( 16 );
+		Phasor p0 = new Phasor( Math.PI/2 );
+		Phasor p1 = new Phasor( Math.PI*3/2 );
+
 		for (int a=0; a<5; a++) {
 			for (int i=0; i<20; i++) {
-				System.out.println( qm.phase( Math.PI/2 ) );
+				System.out.println( qm.sample( p0 ) );
 			}
 			for (int i=0; i<20; i++) {
-				System.out.println( qm.phase( Math.PI*3/2 ) );
+				System.out.println( qm.sample( p1 ) );
 			}
 		}
+
 	}
 
 }
