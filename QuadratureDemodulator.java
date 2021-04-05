@@ -2,86 +2,73 @@ package bluegill;
 
 public class QuadratureDemodulator implements PhasorProducer {
 
-	private double samplesPerCycle;
-	private double iPhaseOffset;
-	private int	filterLength;
-
-	private Phasor p0;
-	private Phasor p1;
-	private double amplitude;
-	private double phase;
 	private double frequency;
 
-	private int t;
+	private Phasor iqData;
+	private Phasor localOscillator;
 
 	private SignalPath iFilter;
 	private SignalPath qFilter;
 
 
 	public QuadratureDemodulator ( double samplesPerCycle ) {
-		this( samplesPerCycle, (int)(samplesPerCycle*2), 0.0, 0.0, 0.0 );
+		this( samplesPerCycle, (int)(samplesPerCycle*2), 0.0 );
 	}
 
 	public QuadratureDemodulator ( double samplesPerCycle, int filterLength ) {
-		this( samplesPerCycle, filterLength, 0.0, 0.0, 0.0 );
+		this( samplesPerCycle, filterLength, 0.0 );
 	}
 
-	public QuadratureDemodulator ( double samplesPerCycle, int filterLength, double iPhaseOffset, double iInit, double qInit ) {
-		this.samplesPerCycle = samplesPerCycle;
-		this.iPhaseOffset = iPhaseOffset;
-		this.filterLength = filterLength;
-		p0 = new Phasor( iInit, qInit );
-		p1 = new Phasor( iInit, qInit );
-		t = 0;
+	public QuadratureDemodulator ( double samplesPerCycle, int filterLength, double loPhase ) {
+		frequency = 1/samplesPerCycle;
+		iqData = new Phasor();
+		localOscillator = new Phasor( loPhase );
 		iFilter = new FIRFilter( filterLength );
 		qFilter = new FIRFilter( filterLength );
 	}
 
 	public Phasor sample ( double sample ) {
 
-		p0 = p1;
+		// Get next LO sample
+		localOscillator = localOscillator.relative( frequency );
 
 		// Mixing and filtering
-		p1 = new Phasor(
-			iFilter.sample( sample * Math.sin( 2*Math.PI*(1/samplesPerCycle)*t - (iPhaseOffset            ) ) ),
-			qFilter.sample( sample * Math.sin( 2*Math.PI*(1/samplesPerCycle)*t - (iPhaseOffset + Math.PI/2) ) )
+		iqData = Phasor.rectangular(
+			iFilter.sample(
+				sample * localOscillator.real()  // Mixing/filtering with LO real to get In-phase
+			),
+			qFilter.sample(
+				sample * localOscillator.imag()  // Mixing/filtering with LO imaginary to get Quadrature
+			),
+			iqData // save reference to current data; can be retreived as iqData.past()
 		);
 
-		t++;
-
-		return p1;
-	}
-
-	public double frequency () {
-		return p1.multiply( p0.conjugate() ).phase();
+		return iqData;
 	}
 
 	// test QuadratureDemodulator
 	public static void main (String[] args) {
 		PhasorConsumer qm = new QuadratureModulator( 16.0 );
 		SignalPath filter = new FIRFilter( 16 );
-		PhasorProducer qd = new QuadratureDemodulator( 16.0 );
+		PhasorProducer qd = new QuadratureDemodulator( 16.0, 32, Math.random()*2*Math.PI );
 		// SignalPath se = new SignalEnvelope( 16, 0.5, 0.5, 0.0, 0.0 );
 		SignalPath se = new SignalEnvelope( 16 );
 		System.out.println( se );
-		for (int i=0; i<20; i++) {
-			double modSample = qm.phase( Math.PI/2 ) * 0.1;
-			double filteredSample = filter.sample( modSample );
-			qd.input( filteredSample );
-			System.out.println( modSample+","+filteredSample+","+qd.amplitude()+","+qd.phase()+","+se.sample(filteredSample) );
+
+		Phasor noSignal = new Phasor(0.1, Math.PI/2);
+		Phasor pulseSignal = new Phasor(1.0, Math.PI/2);
+
+		boolean signal = false;
+		for (int a=0; a<5; a++) {
+			signal = ( signal ? false : true );
+			for (int b=0; b<40; b++) {
+				double modSample = qm.sample( signal ? noSignal : pulseSignal );
+				double filteredSample = filter.sample( modSample );
+				Phasor p = qd.sample( filteredSample );
+				System.out.println( modSample+","+filteredSample+","+p.magnitude()+","+p.phase()+","+se.sample(filteredSample) );
+			}
 		}
-		for (int i=0; i<50; i++) {
-			double modSample = qm.phase( Math.PI/2 );
-			double filteredSample = filter.sample( modSample );
-			qd.input( filteredSample );
-			System.out.println( modSample+","+filteredSample+","+qd.amplitude()+","+qd.phase()+","+se.sample(filteredSample) );
-		}
-		for (int i=0; i<100; i++) {
-			double modSample = qm.phase( Math.PI/2 ) * 0.1;
-			double filteredSample = filter.sample( modSample );
-			qd.input( filteredSample );
-			System.out.println( modSample+","+filteredSample+","+qd.amplitude()+","+qd.phase()+","+se.sample(filteredSample) );
-		}
+
 	}
 
 }

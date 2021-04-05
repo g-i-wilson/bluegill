@@ -17,13 +17,6 @@ public class Phasor {
     return phase;
   }
 
-  public static Phasor rectangular ( double real, double imag ) {
-    return new Phasor(
-      Math.sqrt( Math.pow(real,2) + Math.pow(imag,2) ),
-      Math.atan2( real, imag )
-    );
-  }
-
   public Phasor () { // real unit vector
     this( 0.0 );
   }
@@ -33,13 +26,25 @@ public class Phasor {
   }
 
   public Phasor ( double magnitude, double phase ) { // vector
-    this.magnitude = magnitude;
-    this.phase = normalizedPhase( phase );
+    this( magnitude, phase, null );
   }
 
   public Phasor ( double magnitude, double phase, Phasor past ) { // vector & reference to past
-    this( magnitude, phase );
+    this.magnitude = magnitude;
+    this.phase = normalizedPhase( phase );
     this.past = past;
+  }
+
+  public static Phasor rectangular ( double real, double imag ) {
+    return rectangular( real, imag, null );
+  }
+
+  public static Phasor rectangular ( double real, double imag, Phasor past ) {
+    return new Phasor(
+      Math.sqrt( Math.pow(real,2) + Math.pow(imag,2) ),
+      Math.atan2( real, imag ),
+      past
+    );
   }
 
   public double real () {
@@ -86,11 +91,6 @@ public class Phasor {
 
   public Phasor past () {
     return past;
-  }
-
-  public Phasor past ( Phasor past ) {
-    this.past = past;
-    return this.past;
   }
 
   public double frequency () {
