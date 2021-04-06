@@ -12,7 +12,7 @@ public class Convolution extends Window {
 		super( coefs, a0, a1, a2, a3 );
 	}
 
-	public double operation ( int i ) {
+	public double f ( int i ) {
 		if (coef(i) > 0.0) {
 			return Math.min( coef(i), x(i) );
 		} else if (coef(i) < 0.0) {

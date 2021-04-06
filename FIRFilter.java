@@ -12,13 +12,13 @@ public class FIRFilter extends Window {
 		super( coef );
 	}
 
-	public double operation ( int i ) {
-		return coef(i) * x(i);
+	public double f ( int t ) {
+		return coef(t) * x(t);
 	}
 
 	// test
 	public static void main (String[] args) {
-		FIRFilter sig0 = new FIRFilter( 5 );
+		FIRFilter sig0 = new FIRFilter( 10 );
 		for (int i=0; i<10; i++) {
 			System.out.println( sig0.sample( 0.0 ) );
 		}
@@ -26,7 +26,7 @@ public class FIRFilter extends Window {
 			System.out.println( sig0.sample( 0.0 ) );
 			System.out.println( sig0.sample( 1.0 ) );
 		}
-		for (int i=0; i<10; i++) {
+		for (int i=0; i<20; i++) {
 			System.out.println( sig0.sample( 0.0 ) );
 		}
 	}

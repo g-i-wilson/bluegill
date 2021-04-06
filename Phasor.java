@@ -1,6 +1,6 @@
 package bluegill;
 
-public class Phasor {
+public class Phasor implements Complex {
 
   private double magnitude;
   private double phase;
@@ -86,6 +86,10 @@ public class Phasor {
   }
 
   public double phase () {
+    return phase;
+  }
+
+  public double angle () {
     return phase;
   }
 

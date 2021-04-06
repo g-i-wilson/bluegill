@@ -9,7 +9,6 @@ public class TransferFunction<T> {
 	private List<T> y;
 	private int maxSize;
 	private boolean fwd;
-	private T zero;
 	
 	
 	public TransferFunction ( int maxSize ) {
@@ -17,11 +16,7 @@ public class TransferFunction<T> {
 	}	
 	
 	public TransferFunction ( int maxSize, boolean fwd ) {
-		this( maxSize, fwd, null );
-	}
-	
-	public TransferFunction ( int maxSize, boolean fwd, T zero ) {
-		init( maxSize, null, fwd, zero );
+		init( maxSize, null, fwd );
 	}
 	
 	public TransferFunction ( List<T> coef ) {
@@ -29,20 +24,16 @@ public class TransferFunction<T> {
 	}
 
 	public TransferFunction ( List<T> coef, boolean fwd ) {
-		this( coef, fwd, null );
+		init( coef.size(), coef, fwd );
 	}
 	
-	public TransferFunction ( List<T> coef, boolean fwd, T zero ) {
-		init( coef.size(), coef, fwd, zero );
-	}
 
-	private void init ( int maxSize, List<T> coef, boolean fwd, T zero ) {
+	private void init ( int maxSize, List<T> coef, boolean fwd ) {
 		this.fwd = fwd;
 		this.maxSize = maxSize;
 		this.coef = coef;
 		x = new ArrayList<T>();
 		y = new ArrayList<T>();
-		this.zero = zero;
 	}
 	
 
@@ -57,7 +48,7 @@ public class TransferFunction<T> {
 	}
 
 	protected T getElement ( List<T> list, int i ) {
-		if (i>list.size()-1 || i<0) return zero;
+		if (i>list.size()-1 || i<0) return null;
 		return list.get(i);
 	}
 	
@@ -81,16 +72,20 @@ public class TransferFunction<T> {
 		return this;
 	}
 	
-	public T coef ( int i ) {
-		return getElement( coef, i );
+	public List<T> coef () {
+		return coef;
 	}
 	
-	public T x ( int i ) {
-		return getElement( x, i );
+	public List<T> x () {
+		return x;
 	}
 	
-	public T y ( int i ) {
-		return getElement( y, i );
+	public List<T> y () {
+		return y;
+	}
+	
+	public int size () {
+		return maxSize;
 	}
 	
 	public String toString () {
