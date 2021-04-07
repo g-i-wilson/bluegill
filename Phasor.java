@@ -1,5 +1,10 @@
 package bluegill;
 
+// Immutable class that implements Complex and has some extra features, such as:
+//    .frequency()
+//    .relative()
+//    .past()
+
 public class Phasor implements Complex {
 
   private double magnitude;
@@ -17,6 +22,8 @@ public class Phasor implements Complex {
     return phase;
   }
 
+
+
   public Phasor () { // real unit vector
     this( 0.0 );
   }
@@ -29,52 +36,55 @@ public class Phasor implements Complex {
     this( magnitude, phase, null );
   }
 
+  public Phasor ( Rectangular r ) { // from a Rectangular
+  	this( r.magnitude(), r.phase() );
+  }
+
+  public Phasor ( Phasor p ) { // from another Phasor
+  	this( p.magnitude(), p.phase(), p );
+  }
+
   public Phasor ( double magnitude, double phase, Phasor past ) { // vector & reference to past
     this.magnitude = magnitude;
     this.phase = normalizedPhase( phase );
     this.past = past;
   }
+  
+	public static Phasor rectangular ( double real, double imag ) {
+		return rectangular( real, imag, null );
+	}
 
-  public static Phasor rectangular ( double real, double imag ) {
-    return rectangular( real, imag, null );
-  }
+	public static Phasor rectangular ( double real, double imag, Phasor past ) {
+		return new Phasor(
+			Math.sqrt( Math.pow(real,2) + Math.pow(imag,2) ),
+			Math.atan2( imag, real ),
+			past
+		);
+	}
 
-  public static Phasor rectangular ( double real, double imag, Phasor past ) {
-    return new Phasor(
-      Math.sqrt( Math.pow(real,2) + Math.pow(imag,2) ),
-      Math.atan2( real, imag ),
-      past
-    );
-  }
 
-  public double real () {
-    return magnitude * Math.cos(phase);
-  }
+	// Satisfy Complex interface
 
-  public double imag () {
-    return magnitude * Math.sin(phase);
-  }
-
-  public Phasor multiply ( Phasor b ) {
+  public Complex multiply ( Complex b ) {
     return new Phasor( magnitude()*b.magnitude(), phase()+b.phase() );
   }
 
-  public Phasor divide ( Phasor b ) {
+  public Complex divide ( Complex b ) {
     return new Phasor( magnitude()/b.magnitude(), phase()-b.phase() );
   }
 
-  public Phasor conjugate () {
+  public Complex conjugate () {
     return new Phasor( magnitude(), -phase() );
   }
 
-  public Phasor add ( Phasor b ) {
+  public Complex add ( Complex b ) {
     return rectangular(
       real()+b.real(),
       imag()+b.imag()
     );
   }
 
-  public Phasor subtract ( Phasor b ) {
+  public Complex subtract ( Complex b ) {
     return rectangular(
       real()-b.real(),
       imag()-b.imag()
@@ -89,9 +99,16 @@ public class Phasor implements Complex {
     return phase;
   }
 
-  public double angle () {
-    return phase;
+  public double real () {
+    return magnitude * Math.cos(phase);
   }
+
+  public double imag () {
+    return magnitude * Math.sin(phase);
+  }
+
+
+	// Extra cool features
 
   public Phasor past () {
     return past;
@@ -118,12 +135,8 @@ public class Phasor implements Complex {
     return new Phasor( magnitude, 2*Math.PI*frequency*time + phase + phaseOffset, this );
   }
 
-  public String pretty () {
-    return magnitude+" ∠ "+(phase/Math.PI)+"π, "+real()+" + ⅉ"+imag();
-  }
-
   public String toString () {
-    return magnitude+","+phase+","+real()+","+imag();
+    return magnitude+" ∠ "+(phase/(2*Math.PI))+"*2π";
   }
 
   // test Phasor

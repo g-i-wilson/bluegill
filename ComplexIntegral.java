@@ -2,66 +2,70 @@ package bluegill;
 
 import java.util.*;
 
-public abstract class Integral<T> extends TransferFunction<T> implements ComplexSignalPath {
+public abstract class ComplexIntegral extends TransferFunction<Complex> implements ComplexSignalPath {
 
-	public Integral ( List<T> coef ) {
+	public ComplexIntegral ( int size ) {
+		super( size );
+	}
+
+	public ComplexIntegral ( List<Complex> coef ) {
 		super( coef );
 	}
 
 	///////// Abstract method /////////
-	public abstract T f ( T yProcess, int t ); // models: f(coef(t),x(t))
+	public abstract Complex f ( int t ); // models: f(coef(t),x(t))
 	
 	///////// Abstract method /////////
-	public abstract T blank (); // returns a "blank" T object
+	public abstract Complex zero (); // definition of zero value is up to child class
 
-	public T sample ( T x ) {
+	public Complex sample ( Complex x ) {
 		x( x );
-		T yProcess = blank();
+		Complex y = zero();
 		for (int t=0; t<size(); t++)
-			yProcess = f( yProcess, t ); // models: y = integral[ f(coef(t),x(t)) ]dt
-		y( yProcess );
-		return yProcess;
+			y = y.add( f( t ) ); // models: y = integral[ f(coef(t),x(t)) ]dt
+		y( y );
+		return y;
 	}
 	
-	private T notNull ( T test ) {
-		return ( test == null ? blank() : test );
+	private Complex notNull ( Complex test ) {
+		return ( test == null ? zero() : test );
 	}
 
-	public T coef ( int t ) {
+	public Complex coef ( int t ) {
 		return notNull( super.coef(t) );
 	}
 	
-	public T x ( int t ) {
+	public Complex x ( int t ) {
 		return notNull( super.x(t) );
 	}
 	
-	public T y ( int t ) {
+	public Complex y ( int t ) {
 		return notNull( super.y(t) );
 	}
 	
 }
 
 
-class TestIntegral extends Integral<Double> {
+class TestComplexIntegral extends ComplexIntegral {
 
-	public TestIntegral ( List<Double> list ) {
-		super( list );
+	public TestComplexIntegral ( int size ) {
+		super( size );
 	}
 
-	public Double blank () {
-		return new Double(0.0);
+	public Complex zero () {
+		return new Rectangular();
 	}
 
-	public Double f ( Double yProcess, int t ) {
-		return yProcess.doubleValue() + x(t).doubleValue()*coef(t).doubleValue();
+	public Complex f ( int t ) {
+		return x(t).multiply(coef(t));
 	}
 	
 	public static void main (String[] args) {
-		TestIntegral ti = new TestIntegral( new ArrayList<Double>(Arrays.asList(0.1,0.1,0.1,0.1,0.1,0.1)) );
-		for (double i=0.0; i<10.0; i++) {
-			System.out.println( ti.sample(i) );
+		TestComplexIntegral tci = new TestComplexIntegral( 5 );
+		for (double i=1.0; i<=10.0; i++) {
+			System.out.println( tci.sample( new Phasor( i, 0.0 ) ) );
 		}
-		System.out.println( ti );
+		System.out.println( tci );
 	}
 	
 }

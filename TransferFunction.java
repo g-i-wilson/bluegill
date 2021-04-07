@@ -8,28 +8,28 @@ public class TransferFunction<T> {
 	private List<T> x;
 	private List<T> y;
 	private int maxSize;
-	private boolean fwd;
+	private boolean forward;
 	
 	
 	public TransferFunction ( int maxSize ) {
 		this( maxSize, true );
-	}	
+	}
 	
-	public TransferFunction ( int maxSize, boolean fwd ) {
-		init( maxSize, null, fwd );
+	public TransferFunction ( int maxSize, boolean forward ) {
+		init( maxSize, null, forward );
 	}
 	
 	public TransferFunction ( List<T> coef ) {
 		this( coef, true );
 	}
 
-	public TransferFunction ( List<T> coef, boolean fwd ) {
-		init( coef.size(), coef, fwd );
+	public TransferFunction ( List<T> coef, boolean forward ) {
+		init( coef.size(), coef, forward );
 	}
 	
 
-	private void init ( int maxSize, List<T> coef, boolean fwd ) {
-		this.fwd = fwd;
+	private void init ( int maxSize, List<T> coef, boolean forward ) {
+		this.forward = forward;
 		this.maxSize = maxSize;
 		this.coef = coef;
 		x = new ArrayList<T>();
@@ -48,12 +48,12 @@ public class TransferFunction<T> {
 	}
 
 	protected T getElement ( List<T> list, int i ) {
-		if (i>list.size()-1 || i<0) return null;
+		if (list == null || i>list.size()-1 || i<0) return null;
 		return list.get(i);
 	}
 	
 	protected void addElement ( List<T> list, T element ) {
-		if (fwd) addShift( list, element );
+		if (forward) addShift( list, element );
 		else addShiftReverse( list, element );
 	}
 	
@@ -72,16 +72,16 @@ public class TransferFunction<T> {
 		return this;
 	}
 	
-	public List<T> coef () {
-		return coef;
+	public T coef ( int i ) {
+		return getElement(coef, i);
 	}
 	
-	public List<T> x () {
-		return x;
+	public T x ( int i ) {
+		return getElement(x, i);
 	}
 	
-	public List<T> y () {
-		return y;
+	public T y ( int i ) {
+		return getElement(y, i);
 	}
 	
 	public int size () {
@@ -101,10 +101,10 @@ public class TransferFunction<T> {
 	public static void main (String[] args) {
 		TransferFunction<Double> tf = new TransferFunction<>( 4 );
 		tf
-			.x( new Double(1.1) )
-			.x( new Double(1.2) )
-			.x( new Double(1.3) )
-			.x( new Double(1.4) )
+			.x( 1.1 )
+			.x( 1.2 )
+			.x( 1.3 )
+			.x( 1.4 )
 		;
 		System.out.println( tf );
 		tf = new TransferFunction<>( new ArrayList<Double>(Arrays.asList(0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7)) );

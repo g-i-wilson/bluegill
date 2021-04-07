@@ -15,7 +15,7 @@ public interface Complex {
 	
 	public double magnitude ( );
 	
-	public double angle ( );
+	public double phase ( );
 	
 	public double real ( );
 	

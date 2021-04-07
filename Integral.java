@@ -23,29 +23,20 @@ public abstract class Integral extends TransferFunction<Double> implements Signa
 		return y;
 	}
 
-	public double coef ( int i ) {
-		if (i>coef().size()-1 || i<0) return 0.0;
-		return coef().get(i).doubleValue();
+	private Double notNull ( Double test ) {
+		return ( test == null ? 0.0 : test );
 	}
 
-	public double x ( int i ) {
-		if (i>x().size()-1 || i<0) return 0.0;
-		return x().get(i).doubleValue();
+	public Double coef ( int t ) {
+		return notNull( super.coef(t) );
 	}
-
-	public double y ( int i ) {
-		if (i>y().size()-1 || i<0) return 0.0;
-		return y().get(i).doubleValue();
+	
+	public Double x ( int t ) {
+		return notNull( super.x(t) );
 	}
-
-	public String toString () {
-		String str = "Coefficients: \n";
-		for (Double d : coef()) str += d+"\n";
-		str += "Current x state:\n";
-		for (Double d : x()) str += d+"\n";
-		str += "Current y state:\n";
-		for (Double d : y()) str += d+"\n";
-		return str;
+	
+	public Double y ( int t ) {
+		return notNull( super.y(t) );
 	}
 
 }
