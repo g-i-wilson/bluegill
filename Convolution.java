@@ -8,8 +8,8 @@ public class Convolution extends Window {
 		super( coefs );
 	}
 
-	public Convolution ( List<Double> coefs, double a0, double a1, double a2, double a3 ) {
-		super( coefs, a0, a1, a2, a3 );
+	public Convolution ( List<Double> coefs, double[] a ) {
+		super( coefs, a );
 	}
 
 	public double f ( int i ) {

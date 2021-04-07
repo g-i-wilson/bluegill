@@ -2,58 +2,77 @@ package bluegill;
 
 import java.util.*;
 
-public abstract class Window<T> extends Integral<T> {
+public abstract class ComplexWindow extends ComplexIntegral {
 
-	///////// Abstract method /////////
-	public abstract T unity ();
-
-	public List<T> unity ( int len ) {
-		List<T> coef = new ArrayList<>();
+	public static List<Complex> unity ( int len ) {
+		List<Complex> coef = new ArrayList<>();
 		for (int i=0; i<len; i++) {
-			coef.add( unity() );
+			coef.add( new Phasor( 1.0, 0.0 ) ); // multiplication is faster with Phasors
 		}
 		return coef;
 	}
 
-	public static List<T> applyWindow ( List<T> coef, double a0, double a1, double a2, double a3 ) {
+	public static List<Complex> applyWindow ( List<Complex> coef, double[] a ) {
 		int N = coef.size()-1;
 		for (int n=0; n<=N; n++) {
-			double window =
-				  a0
-				- a1*Math.cos((2*Math.PI*n)/N)
-				+ a2*Math.cos((4*Math.PI*n)/N)
-				- a3*Math.cos((6*Math.PI*n)/N)
-			;
-			coef.set( n, window*coef.get(n) );
+			Complex window = new Phasor( // multiplication is faster with Phasors
+				  a[0]
+				- a[1]*Math.cos((2*Math.PI*n)/N)
+				+ a[2]*Math.cos((4*Math.PI*n)/N)
+				- a[3]*Math.cos((6*Math.PI*n)/N)
+				, 0.0 // window coefficients are real
+			);
+			coef.set( n, window.multiply(coef.get(n)) );
 		}
 		return coef;
 	}
 
-	// Blackman-Nuttall
-	public Window ( int length ) {
-		this( length, 0.3635819, 0.4891775, 0.1365995, 0.0106411 );
+	public ComplexWindow ( int length ) {
+		this( length, Windows.BlackmanNuttall );
 	}
 
-	// Blackman-Nuttall
-	public Window ( List<Double> coef ) {
-		this( coef, 0.3635819, 0.4891775, 0.1365995, 0.0106411 );
+	public ComplexWindow ( List<Complex> coef ) {
+		this( coef, Windows.BlackmanNuttall );
 	}
 
-
-	public Window ( int filterLength, double a0, double a1, double a2, double a3 ) {
+	public ComplexWindow ( int filterLength, double[] a ) {
 		super(
 			applyWindow(
-				unity( filterLength ), a0, a1, a2, a3
+				unity( filterLength ),
+				a
 			)
 		);
 	}
 
-	public Window ( List<Double> coef, double a0, double a1, double a2, double a3 ) {
+	public ComplexWindow ( List<Complex> coef, double[] a ) {
 		super(
 			applyWindow(
-				coef, a0, a1, a2, a3
+				coef,
+				a
 			)
 		);
 	}
 
+}
+
+
+class TestComplexWindow extends ComplexWindow {
+
+	public TestComplexWindow ( int size, double[] a ) {
+		super(size, a);
+	}
+	
+	public Complex zero () {
+		return new Rectangular();
+	}
+
+	public Complex f ( int t ) {
+		return coef(t).multiply(x(t));
+	}
+	
+	public static void main (String[] args) {
+		System.out.println( new TestComplexWindow( 5, Windows.Hann ) );
+		System.out.println( new TestComplexWindow( 5, Windows.Blackman ) );
+		System.out.println( new TestComplexWindow( 5, Windows.BlackmanNuttall ) );
+	}
 }

@@ -4,10 +4,6 @@ import java.util.*;
 
 public abstract class ComplexIntegral extends TransferFunction<Complex> implements ComplexSignalPath {
 
-	public ComplexIntegral ( int size ) {
-		super( size );
-	}
-
 	public ComplexIntegral ( List<Complex> coef ) {
 		super( coef );
 	}
@@ -21,8 +17,9 @@ public abstract class ComplexIntegral extends TransferFunction<Complex> implemen
 	public Complex sample ( Complex x ) {
 		x( x );
 		Complex y = zero();
-		for (int t=0; t<size(); t++)
+		for (int t=0; t<size(); t++) {
 			y = y.add( f( t ) ); // models: y = integral[ f(coef(t),x(t)) ]dt
+		}
 		y( y );
 		return y;
 	}
@@ -48,20 +45,24 @@ public abstract class ComplexIntegral extends TransferFunction<Complex> implemen
 
 class TestComplexIntegral extends ComplexIntegral {
 
-	public TestComplexIntegral ( int size ) {
-		super( size );
+	public TestComplexIntegral ( List<Complex> list ) {
+		super(list);
 	}
 
 	public Complex zero () {
-		return new Rectangular();
+		return new Rectangular(); // addition is faster with Rectangular
 	}
 
 	public Complex f ( int t ) {
-		return x(t).multiply(coef(t));
+		return coef(t).multiply(x(t)); // if coef(t) is Phasor, then multiplication is faster
 	}
 	
 	public static void main (String[] args) {
-		TestComplexIntegral tci = new TestComplexIntegral( 5 );
+		List<Complex> list = new ArrayList<>();
+		for (int i=0; i<5; i++) {
+			list.add( (Complex) new Phasor(1.0,0.0) );
+		}
+		TestComplexIntegral tci = new TestComplexIntegral( list );
 		for (double i=1.0; i<=10.0; i++) {
 			System.out.println( tci.sample( new Phasor( i, 0.0 ) ) );
 		}

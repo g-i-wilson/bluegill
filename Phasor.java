@@ -44,6 +44,10 @@ public class Phasor implements Complex {
   	this( p.magnitude(), p.phase(), p );
   }
 
+  public Phasor ( Complex c ) { // from an unknown Complex
+  	this( c.magnitude(), c.phase() );
+  }
+
   public Phasor ( double magnitude, double phase, Phasor past ) { // vector & reference to past
     this.magnitude = magnitude;
     this.phase = normalizedPhase( phase );

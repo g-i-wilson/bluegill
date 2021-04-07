@@ -24,8 +24,8 @@ public class HilbertTransform extends Convolution {
     super( computeHilbert(length) );
   }
 
-  public HilbertTransform ( int length, double a0, double a1, double a2, double a3 ) {
-    super( computeHilbert(length), a0, a1, a2, a3 );
+  public HilbertTransform ( int length, double[] a ) {
+    super( computeHilbert(length), a );
   }
 
 }

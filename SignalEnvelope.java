@@ -6,8 +6,8 @@ public class SignalEnvelope extends HilbertTransform {
     super( length );
   }
 
-  public SignalEnvelope ( int length, double a0, double a1, double a2, double a3 ) {
-    super( length, a0, a1, a2, a3 );
+  public SignalEnvelope ( int length, double[] a ) {
+    super( length, a );
   }
 
   @Override

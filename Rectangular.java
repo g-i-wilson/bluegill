@@ -18,9 +18,9 @@ public class Rectangular implements Complex {
 		this.imag = imag;
 	}
 	
-	public Rectangular ( Phasor p ) {
-		real = p.real();
-		imag = p.imag();
+	public Rectangular ( Complex c ) {
+		real = c.real();
+		imag = c.imag();
 	}
 	
 	
@@ -99,13 +99,7 @@ public class Rectangular implements Complex {
 	}
 	
 	
-	// clone method because this is a mutable class
-	
-	public Rectangular clone () {
-		return new Rectangular( real, imag );
-	}
-	
-	
+
   public String toString () {
     return real()+" + ⅉ"+imag();
   }
@@ -116,14 +110,14 @@ public class Rectangular implements Complex {
   	System.out.println( "c+c: "+c.add( new Phasor(1.0, Math.PI/4) ) );
 
   	Rectangular c0 = (Rectangular) c;
-  	Rectangular c1 = c0.clone();
+  	Rectangular c1 = new Rectangular(c0); // clone
   	System.out.println( "c1 <- c: "+c1 );
-  	System.out.println( "c1*2: "+c1.multiply( new Phasor(2.0, 0.0 ) ) );
+  	System.out.println( "c1*4: "+c1.multiply( new Phasor(4.0, 0.0 ) ) );
   	System.out.println( "c1/2: "+c1.divide( new Phasor(2.0, 0.0 ) ) );
 
-  	System.out.println( "c: "+c.subtract( new Phasor(1.0, Math.PI/4) ) );
-  	System.out.println( "c*2: "+c.multiply( new Phasor(2.0, 0.0) ) );
-  	System.out.println( "conj(c*2): "+c.conjugate() );
+  	System.out.println( "c+c-c: "+c.subtract( new Phasor(1.0, Math.PI/4) ) );
+  	System.out.println( "(c+c-c)*2: "+c.multiply( new Phasor(2.0, 0.0) ) );
+  	System.out.println( "conj((c+c-c)*2): "+c.conjugate() );
   }
 
 }
