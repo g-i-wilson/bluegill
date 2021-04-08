@@ -2,14 +2,22 @@ package bluegill;
 
 import java.util.*;
 
-public class FIRFilter extends Window {
+public class FIRFilter extends Integral {
 
 	public FIRFilter ( int filterLength ) {
-		super( filterLength );
+		this( filterLength, Windows.BlackmanNuttall );
+	}
+
+	public FIRFilter ( int filterLength, double[] a ) {
+		super( filterLength, a );
 	}
 
 	public FIRFilter ( List<Double> coef ) {
-		super( coef );
+		this( coef, Windows.BlackmanNuttall );
+	}
+
+	public FIRFilter ( List<Double> coef, double[] a ) {
+		super( coef, a );
 	}
 
 	public double f ( int t ) {

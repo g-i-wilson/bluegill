@@ -2,10 +2,22 @@ package bluegill;
 
 import java.util.*;
 
-public abstract class Integral extends TransferFunction<Double> implements SignalPath {
+public abstract class Integral extends Window {
+
+	public Integral ( int length ) {
+		super( length );
+	}
 
 	public Integral ( List<Double> coef ) {
 		super( coef );
+	}
+
+	public Integral ( int length, double[] a ) {
+		super( length, a );
+	}
+
+	public Integral ( List<Double> coef, double[] a ) {
+		super( coef, a );
 	}
 
 	///////// Abstract method /////////
@@ -23,30 +35,14 @@ public abstract class Integral extends TransferFunction<Double> implements Signa
 		return y;
 	}
 
-	private Double notNull ( Double test ) {
-		return ( test == null ? 0.0 : test );
-	}
-
-	public Double coef ( int t ) {
-		return notNull( super.coef(t) );
-	}
-	
-	public Double x ( int t ) {
-		return notNull( super.x(t) );
-	}
-	
-	public Double y ( int t ) {
-		return notNull( super.y(t) );
-	}
-
 }
 
 
 
 class TestIntegral extends Integral {
 
-	public TestIntegral ( List<Double> list ) {
-		super( list );
+	public TestIntegral ( int length ) {
+		super( length );
 	}
 
 	public double f ( int t ) {
@@ -54,7 +50,7 @@ class TestIntegral extends Integral {
 	}
 	
 	public static void main (String[] args) {
-		TestIntegral ti = new TestIntegral( new ArrayList<Double>(Arrays.asList(0.1,0.1,0.1,0.1,0.1,0.1)) );
+		TestIntegral ti = new TestIntegral( 10 );
 		for (double i=0.0; i<10.0; i++) {
 			System.out.println( ti.sample(i) );
 		}

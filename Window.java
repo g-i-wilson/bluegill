@@ -2,7 +2,7 @@ package bluegill;
 
 import java.util.*;
 
-public abstract class Window extends Integral {
+public abstract class Window extends TransferFunction<Double> implements SignalPath {
 
 	public static List<Double> unity ( int len ) {
 		List<Double> coef = new ArrayList<>();
@@ -21,11 +21,11 @@ public abstract class Window extends Integral {
 	}
 
 	public Window ( int length ) {
-		this( length, Windows.BlackmanNuttall );
+		super( unity(length) );
 	}
 
 	public Window ( List<Double> coef ) {
-		this( coef, Windows.BlackmanNuttall );
+		super( coef );
 	}
 
 
@@ -45,6 +45,22 @@ public abstract class Window extends Integral {
 				a
 			)
 		);
+	}
+
+	private Double notNull ( Double test ) {
+		return ( test == null ? 0.0 : test );
+	}
+
+	public Double coef ( int t ) {
+		return notNull( super.coef(t) );
+	}
+	
+	public Double x ( int t ) {
+		return notNull( super.x(t) );
+	}
+	
+	public Double y ( int t ) {
+		return notNull( super.y(t) );
 	}
 
 }
