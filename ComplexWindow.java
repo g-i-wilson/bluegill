@@ -2,7 +2,7 @@ package bluegill;
 
 import java.util.*;
 
-public abstract class ComplexWindow extends ComplexIntegral {
+public abstract class ComplexWindow extends TransferFunction<Complex> implements ComplexSignalPath {
 
 	public static List<Complex> unity ( int len ) {
 		List<Complex> coef = new ArrayList<>();
@@ -13,26 +13,21 @@ public abstract class ComplexWindow extends ComplexIntegral {
 	}
 
 	public static List<Complex> applyWindow ( List<Complex> coef, double[] a ) {
-		int N = coef.size()-1;
-		for (int n=0; n<=N; n++) {
-			Complex window = new Phasor( // multiplication is faster with Phasors
-				  a[0]
-				- a[1]*Math.cos((2*Math.PI*n)/N)
-				+ a[2]*Math.cos((4*Math.PI*n)/N)
-				- a[3]*Math.cos((6*Math.PI*n)/N)
-				, 0.0 // window coefficients are real
-			);
-			coef.set( n, window.multiply(coef.get(n)) );
+		List<Complex> newCoef = new ArrayList<>();
+		double[] winCoef = Windows.create( a, coef.size() );
+		for (int i=0; i<coef.size(); i++) {
+			Complex winPhasor = new Phasor( winCoef[i], 0.0 ); // purely real
+			newCoef.add( winPhasor.multiply( coef.get(i) ) );
 		}
-		return coef;
+		return newCoef;
 	}
 
 	public ComplexWindow ( int length ) {
-		this( length, Windows.BlackmanNuttall );
+		super( unity( length) );
 	}
 
 	public ComplexWindow ( List<Complex> coef ) {
-		this( coef, Windows.BlackmanNuttall );
+		super( coef );
 	}
 
 	public ComplexWindow ( int filterLength, double[] a ) {
@@ -52,6 +47,35 @@ public abstract class ComplexWindow extends ComplexIntegral {
 			)
 		);
 	}
+	
+	///////// Abstract method /////////
+	public abstract Complex zero (); // definition of zero value is up to child class
+
+	public Complex sample ( Complex x ) {
+		x( x );
+		for (int i=0; i<size(); i++)
+			y( coef(i).multiply(x(i)) ); // in this example, y(i) is holding a "windowed" set of samples
+		return x; // also keep passing the un-altered samples along...
+	}
+
+	private Complex notNull ( Complex test ) {
+		return ( test == null ? zero() : test );
+	}
+
+	@Override
+	public Complex coef ( int t ) {
+		return notNull( super.coef(t) );
+	}
+	
+	@Override
+	public Complex x ( int t ) {
+		return notNull( super.x(t) );
+	}
+	
+	@Override
+	public Complex y ( int t ) {
+		return notNull( super.y(t) );
+	}
 
 }
 
@@ -63,16 +87,15 @@ class TestComplexWindow extends ComplexWindow {
 	}
 	
 	public Complex zero () {
-		return new Rectangular();
+		return new Phasor();
 	}
 
-	public Complex f ( int t ) {
-		return coef(t).multiply(x(t));
-	}
-	
 	public static void main (String[] args) {
-		System.out.println( new TestComplexWindow( 5, Windows.Hann ) );
-		System.out.println( new TestComplexWindow( 5, Windows.Blackman ) );
-		System.out.println( new TestComplexWindow( 5, Windows.BlackmanNuttall ) );
+		TestComplexWindow a = new TestComplexWindow( 5, Windows.Hann );
+		System.out.println( a );
+		for (int i=0; i<10; i++) {
+			a.sample( new Rectangular( i, 0 ) );
+			System.out.println( a );
+		}
 	}
 }

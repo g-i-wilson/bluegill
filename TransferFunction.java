@@ -84,9 +84,22 @@ public class TransferFunction<T> {
 		return getElement(y, i);
 	}
 	
+	public List<T> coef () {
+		return coef;
+	}
+	
+	public List<T> x () {
+		return x;
+	}
+	
+	public List<T> y () {
+		return y;
+	}
+	
 	public int size () {
 		return maxSize;
 	}
+	
 	
 	public String toString () {
 		String str = "Coefficients: \n";

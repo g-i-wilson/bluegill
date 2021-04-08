@@ -13,17 +13,11 @@ public abstract class Window extends Integral {
 	}
 
 	public static List<Double> applyWindow ( List<Double> coef, double[] a ) {
-		int N = coef.size()-1;
-		for (int n=0; n<=N; n++) {
-			double window =
-				  a[0]
-				- a[1]*Math.cos((2*Math.PI*n)/N)
-				+ a[2]*Math.cos((4*Math.PI*n)/N)
-				- a[3]*Math.cos((6*Math.PI*n)/N)
-			;
-			coef.set( n, window*coef.get(n) );
-		}
-		return coef;
+		List<Double> newCoef = new ArrayList<>();
+		double[] winCoef = Windows.create( a, coef.size() );
+		for (int i=0; i<coef.size(); i++)
+			newCoef.add( winCoef[i] * coef.get(i) );
+		return newCoef;
 	}
 
 	public Window ( int length ) {

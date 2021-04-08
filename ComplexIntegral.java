@@ -2,18 +2,24 @@ package bluegill;
 
 import java.util.*;
 
-public abstract class ComplexIntegral extends TransferFunction<Complex> implements ComplexSignalPath {
+public abstract class ComplexIntegral extends ComplexWindow {
+
+	public ComplexIntegral ( int length ) {
+		super( length );
+	}
 
 	public ComplexIntegral ( List<Complex> coef ) {
 		super( coef );
 	}
 
+	public ComplexIntegral ( List<Complex> coef, double[] a ) {
+		super( coef, a );
+	}
+
 	///////// Abstract method /////////
 	public abstract Complex f ( int t ); // models: f(coef(t),x(t))
 	
-	///////// Abstract method /////////
-	public abstract Complex zero (); // definition of zero value is up to child class
-
+	@Override
 	public Complex sample ( Complex x ) {
 		x( x );
 		Complex y = zero();
@@ -24,29 +30,15 @@ public abstract class ComplexIntegral extends TransferFunction<Complex> implemen
 		return y;
 	}
 	
-	private Complex notNull ( Complex test ) {
-		return ( test == null ? zero() : test );
-	}
-
-	public Complex coef ( int t ) {
-		return notNull( super.coef(t) );
-	}
-	
-	public Complex x ( int t ) {
-		return notNull( super.x(t) );
-	}
-	
-	public Complex y ( int t ) {
-		return notNull( super.y(t) );
-	}
-	
 }
+
+
 
 
 class TestComplexIntegral extends ComplexIntegral {
 
-	public TestComplexIntegral ( List<Complex> list ) {
-		super(list);
+	public TestComplexIntegral ( int len ) {
+		super(len);
 	}
 
 	public Complex zero () {
@@ -58,15 +50,11 @@ class TestComplexIntegral extends ComplexIntegral {
 	}
 	
 	public static void main (String[] args) {
-		List<Complex> list = new ArrayList<>();
-		for (int i=0; i<5; i++) {
-			list.add( (Complex) new Phasor(1.0,0.0) );
+		TestComplexIntegral tci = new TestComplexIntegral( 10 );
+		for (double t=0.0; t<=10.0; t++) {
+			System.out.println( "time "+t+": "+tci.sample( new Phasor( t, 0.0 ) ) );
 		}
-		TestComplexIntegral tci = new TestComplexIntegral( list );
-		for (double i=1.0; i<=10.0; i++) {
-			System.out.println( tci.sample( new Phasor( i, 0.0 ) ) );
-		}
-		System.out.println( tci );
+		System.out.println( "\n"+tci );
 	}
 	
 }
