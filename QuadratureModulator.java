@@ -2,7 +2,7 @@ package bluegill;
 
 import java.util.*;
 
-public class QuadratureModulator implements PhasorConsumer {
+public class QuadratureModulator implements ComplexConsumer {
 
 	private double frequency;
 	private Phasor localOscillator;
@@ -14,7 +14,7 @@ public class QuadratureModulator implements PhasorConsumer {
 
 	// Each sample is a "mix" of the modulation with the real (In-phase) and imaginary (Quadrature) signals, which are added together.
 	// The modulation Phasor simply scales the I vs Q in the output.
-	public double sample ( Phasor modulation ) {
+	public double sample ( Complex modulation ) {
 		localOscillator = localOscillator.relative( frequency );
 		return
 			modulation.real() * localOscillator.real() +
@@ -24,7 +24,7 @@ public class QuadratureModulator implements PhasorConsumer {
 
 	// test QuadratureModulator
 	public static void main (String[] args) {
-		PhasorConsumer qm = new QuadratureModulator( 16 );
+		ComplexConsumer qm = new QuadratureModulator( 16 );
 		Phasor p0 = new Phasor( Math.PI/2 );
 		Phasor p1 = new Phasor( Math.PI*3/2 );
 

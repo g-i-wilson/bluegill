@@ -1,19 +1,20 @@
 package bluegill;
 
-public class SignalEnvelope extends HilbertTransform {
+public class SignalEnvelope implements ComplexProducer {
+
+	private HilbertTransform ht;
 
   public SignalEnvelope ( int length ) {
-    super( length );
+    ht = new HilbertTransform( length );
   }
 
   public SignalEnvelope ( int length, double[] a ) {
-    super( length, a );
+    ht = new HilbertTransform( length, a );
   }
 
-  @Override
-  public double sample ( double i ) {
-    double q = super.sample( i ); // HilbertTransform
-    return Math.sqrt( i*i + q*q ); // vector amplitude
+  public Complex sample ( double real ) {
+  	double imag = ht.sample( real );
+  	return new Rectangular( real, imag );
   }
 
 }

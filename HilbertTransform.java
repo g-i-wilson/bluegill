@@ -27,5 +27,10 @@ public class HilbertTransform extends Convolution {
   public HilbertTransform ( int length, double[] a ) {
     super( computeHilbert(length), a );
   }
+  
+  public static void main (String[] args) {
+  	System.out.println( new HilbertTransform( 16 ) );
+  	System.out.println( new HilbertTransform( 16, Windows.Blackman ) );  	
+  }
 
 }
